@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 from pathlib import Path
@@ -165,19 +165,35 @@ def analyze(events: list[Event]) -> list[Alert]:
             groups.setdefault((event.source, event.user, event.src_ip), []).append(event)
 
     for (source, user, ip), failures in groups.items():
-        if len(failures) >= 5:
-            alerts.append(_make_alert(
-                "SOCIO-AUTH-001",
-                "Repeated authentication failures",
-                "high",
-                f"{len(failures)} failed authentication events for {user} from {ip or 'unknown IP'} in source {source}.",
-                failures[:20],
-                (
-                    "Validate whether activity is expected.",
-                    "Review successful logins and MFA outcomes.",
-                    "Follow approved incident-response procedures.",
-                ),
-            ))
+        failures.sort(key=lambda event: event.timestamp)
+        cluster: list[Event] = []
+        cluster_start: datetime | None = None
+        clusters: list[list[Event]] = []
+        for failure in failures:
+            if cluster_start is None or failure.timestamp - cluster_start <= timedelta(minutes=10):
+                if cluster_start is None:
+                    cluster_start = failure.timestamp
+                cluster.append(failure)
+            else:
+                clusters.append(cluster)
+                cluster = [failure]
+                cluster_start = failure.timestamp
+        if cluster:
+            clusters.append(cluster)
+        for window in clusters:
+            if len(window) >= 5:
+                alerts.append(_make_alert(
+                    "SOCIO-AUTH-001",
+                    "Repeated authentication failures",
+                    "high",
+                    f"{len(window)} failed authentication events for {user} from {ip or 'unknown IP'} in source {source} within a 10-minute window.",
+                    window[:20],
+                    (
+                        "Validate whether activity is expected.",
+                        "Review successful logins and MFA outcomes.",
+                        "Follow approved incident-response procedures.",
+                    ),
+                ))
 
     for event in events:
         text = f"{event.process} {event.command_line} {event.message}".lower()
