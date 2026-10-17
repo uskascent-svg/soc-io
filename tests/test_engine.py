@@ -54,6 +54,15 @@ class DetectionTests(unittest.TestCase):
         events = [parse_event(event(str(i)), i + 1) for i in range(5)]
         self.assertEqual([alert.rule_id for alert in analyze(events)], ["SOCIO-AUTH-001"])
 
+    def test_auth_failures_outside_ten_minute_window_do_not_correlate(self):
+        rows = []
+        for i in range(5):
+            row = event(str(i))
+            minute = i * 3
+            row["timestamp"] = f"2026-10-17T08:{minute:02d}:00Z"
+            rows.append(parse_event(row, i + 1))
+        self.assertEqual(analyze(rows), [])
+
     def test_sources_do_not_cross_correlate(self):
         rows = [event(str(i), source=f"source-{i}") for i in range(5)]
         parsed = [parse_event(row, i + 1) for i, row in enumerate(rows)]
