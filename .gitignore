@@ -11,3 +11,10 @@ report.json
 dist/
 build/
 *.egg-info/
+data/
+*.db
+*.db-wal
+*.db-shm
+sysmon-events.jsonl
+sysmon-report.json
+evaluation-results.json
