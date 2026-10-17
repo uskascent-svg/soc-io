@@ -1,0 +1,154 @@
+{
+  "schema_version": "1.0",
+  "description": "Small, hand-labeled synthetic regression baseline. Not representative production telemetry.",
+  "cases": [
+    {
+      "id": "auth-five-in-window",
+      "label": "positive",
+      "expected_rules": [
+        "SOCIO-AUTH-001"
+      ],
+      "events": [
+        {
+          "event_id": "auth-0",
+          "timestamp": "2026-10-17T08:00:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.5",
+          "outcome": "failure"
+        },
+        {
+          "event_id": "auth-1",
+          "timestamp": "2026-10-17T08:01:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.5",
+          "outcome": "failure"
+        },
+        {
+          "event_id": "auth-2",
+          "timestamp": "2026-10-17T08:02:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.5",
+          "outcome": "failure"
+        },
+        {
+          "event_id": "auth-3",
+          "timestamp": "2026-10-17T08:03:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.5",
+          "outcome": "failure"
+        },
+        {
+          "event_id": "auth-4",
+          "timestamp": "2026-10-17T08:04:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.5",
+          "outcome": "failure"
+        }
+      ]
+    },
+    {
+      "id": "encoded-process",
+      "label": "positive",
+      "expected_rules": [
+        "SOCIO-PROC-001"
+      ],
+      "events": [
+        {
+          "event_id": "proc-1",
+          "timestamp": "2026-10-17T09:00:00Z",
+          "source": "eval-endpoint",
+          "event_type": "process_create",
+          "command_line": "powershell.exe -EncodedCommand EXAMPLE"
+        }
+      ]
+    },
+    {
+      "id": "endpoint-detection",
+      "label": "positive",
+      "expected_rules": [
+        "SOCIO-AV-001"
+      ],
+      "events": [
+        {
+          "event_id": "av-1",
+          "timestamp": "2026-10-17T10:00:00Z",
+          "source": "eval-av",
+          "event_type": "av_detection",
+          "message": "synthetic detection"
+        }
+      ]
+    },
+    {
+      "id": "ordinary-process",
+      "label": "negative",
+      "expected_rules": [],
+      "events": [
+        {
+          "event_id": "proc-2",
+          "timestamp": "2026-10-17T11:00:00Z",
+          "source": "eval-endpoint",
+          "event_type": "process_create",
+          "command_line": "notepad.exe"
+        }
+      ]
+    },
+    {
+      "id": "four-auth-failures",
+      "label": "negative",
+      "expected_rules": [],
+      "events": [
+        {
+          "event_id": "auth-neg-0",
+          "timestamp": "2026-10-17T12:00:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.7",
+          "outcome": "failure"
+        },
+        {
+          "event_id": "auth-neg-1",
+          "timestamp": "2026-10-17T12:01:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.7",
+          "outcome": "failure"
+        },
+        {
+          "event_id": "auth-neg-2",
+          "timestamp": "2026-10-17T12:02:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.7",
+          "outcome": "failure"
+        },
+        {
+          "event_id": "auth-neg-3",
+          "timestamp": "2026-10-17T12:03:00Z",
+          "source": "eval-auth",
+          "event_type": "authentication",
+          "user": "demo",
+          "src_ip": "192.0.2.7",
+          "outcome": "failure"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Only five synthetic cases; too small and artificial to estimate real-world accuracy.",
+    "Labels are rule expectations for regression testing, not expert adjudication.",
+    "Results must not be presented as production detection performance."
+  ]
+}
